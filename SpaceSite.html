@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Space Site</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato|Open_Sans&display=swap">
+    <style>
+        body {
+            /*background-color: #172247; /*Dark blue background */
+            background-image: url('https://images.pexels.com/photos/998641/pexels-photo-998641.jpeg?cs=srgb&dl=pexels-francesco-ungaro-998641.jpg&fm=jpg');
+            background-size: cover;
+            background-position: center;
+            color: #c9d1d9; /* Light gray text */
+            font-family: 'Open Sans', 'Lato', Arial, sans-serif;
+            margin: 0;
+        }
+
+        h2, h4, p, ol, li {
+            color: #d2d9e0; /* Light gray text */
+        }
+
+        #current-space-info p, #catpic p {
+            word-spacing: 4px;
+        }
+
+        h3 {
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
+        }
+
+        h1 {
+            letter-spacing: 4px; /* Adjust letter spacing */
+            text-shadow: 3px 3px 5px rgba(255, 255, 255, 0.5);
+            background-color: #000000; 
+            border: 2px solid #ffffff; 
+            padding: 10px; 
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        .box {
+            flex-grow: 3;
+            flex-shrink: 1;
+            flex-basis: 0;
+            flex: 0 0 48%;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #0d1117; 
+            border: 1px solid #30363d;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #0d1117;
+            color: #c9d1d9; /* Light gray button text */
+            padding: 10px;
+            border: 1px solid #c9d1d9;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background-color: #161b22; /* Slightly darker background on hover */
+        }
+
+        img {
+            max-width: 87%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+    </style>
+</head>
+
+<body>
+  <h1>Space Site</h1>
+  <div class="container">
+    <div id="current-space-info" class="box">
+      <h3>Daily Space Fact</h3>
+    </div>
+    <div id="epic" class="box"></div>
+    <div id="mars" class="box">
+        <h3>Mars Rover Photos</h3>
+        <button onclick="showRover('curiosity')">Curiosity</button>
+        <button onclick="showRover('opportunity')">Opportunity</button>
+        <button onclick="showRover('spirit')">Spirit</button>
+        <img src="https://i.chzbgr.com/full/9380163072/h4A233ECB/picture-curiosity-rover-selfie-on-mars" alt="rover selfie">
+    </div>
+    <div id="spacePeople" class="box">
+      <h3>Humans in Space Right Now</h3>
+      <img src="https://media-cldnry.s-nbcnews.com/image/upload/newscms/2018_09/705261/141007-international-space-station-jms-1708.jpg" alt="iss">
+      <br>
+    </div>
+    <div id="asteroid" class="box">
+      <h3>Asteroids Near Earth</h3>
+    </div>
+    <div id="catpic" class="box"></div>
+  </div>
+
+  <script>
+
+    // Helper for showRover()
+    function getRandomSol(rover) {
+      min = 1;
+      max = 2000;
+      if (rover === "curiosity") {
+        max = 4003;
+      } else if (rover === "spirit") {
+        max = 2208;
+      } else {
+        max = 5111;
+      }
+      return Math.floor(Math.random() * (max - min + 1)) + min;  
+    }
+
+    // Helper for showRover()
+    function getRandomCam() {
+      let cams = ["FHAZ", "RHAZ", "NAVCAM"];
+      return cams[Math.floor(Math.random() * 3)];
+    }
+
+    // Get Mars rover photos
+    function showRover(rover) {
+        $.ajax({
+            url: 'https://api.nasa.gov/mars-photos/api/v1/rovers/' + rover +'/photos?api_key=Tn5DgJes1Z2gcXF6prmgcAmn9xYAkQksMh8Xovib',
+            method: 'GET',
+            data: {
+                api_key: 'Tn5DgJes1Z2gcXF6prmgcAmn9xYAkQksMh8Xovib',
+                sol: getRandomSol(rover),
+                page: 1,
+                camera: getRandomCam(),
+            },
+            dataType: 'json',
+            success: function (data) {   
+                if (!data.photos || data.photos.length === 0) {
+                    showRover(rover);
+                } else {
+                    const randomIndex = Math.floor(Math.random() * data.photos.length);
+                    const randomImage = data.photos[randomIndex];
+
+                    const marsTitle = $('<h3>').text('Mars Rover Photos');
+                    const imageUrl = randomImage.img_src;
+                    const imageElement = $('<img>').attr('src', imageUrl).attr('alt', 'Mars Image');
+                    const date = $('<p>').text(randomImage.earth_date);
+                    const sol = $('<p>').text("Sol " + randomImage.sol + " (Number of active Mars days at time of picture)");
+                    const prompt = $('<h3>').text("Rover info: ");
+                    const name = $('<p>').text(randomImage.rover.name).css('font-style', 'italic');
+                    const landingDate = $('<p>').text("Landing Date: " + randomImage.rover.landing_date);
+                    const numPhotos = $('<p>').text("# of photos taken: " + randomImage.rover.total_photos);
+                    const status = $('<p>').text('Status: ' + randomImage.rover.status);
+                    
+                    const curButton = $('<button>').attr('onclick', 'showRover("curiosity")').text('Curiosity');
+                    const spirButton = $('<button>').attr('onclick', 'showRover("spirit")').text('Spirit');
+                    const oppButton = $('<button>').attr('onclick', 'showRover("opportunity")').text('Opportunity');
+
+                    // Append elements to the DOM
+                    if($('#mars').is(':empty')) {
+                        $('#mars').append(curButton, oppButton, spirButton, marsTitle, imageElement, date, sol, prompt, name, landingDate, numPhotos, status);
+                    } else {
+                        $('#mars').empty();
+                        $('#mars').append(curButton, oppButton, spirButton, marsTitle, imageElement, date, sol, prompt, name, landingDate, numPhotos, status);
+                    }
+                }
+            },
+            error: function (error) {
+                $('#mars').append($('<p>').text("Try again"));
+                console.error('Error fetching Mars data:', error);  
+            }
+        });
+    }
+
+    // DOC READY
+    $(document).ready(function () {
+        // NASA API endpoint
+        const apiUrl = 'https://api.nasa.gov/planetary/apod?api_key=Tn5DgJes1Z2gcXF6prmgcAmn9xYAkQksMh8Xovib';
+
+        // Fetch current space information
+        $.ajax({
+        url: apiUrl,
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            const title = data.title;
+            const date = data.date;
+            const explanation = data.explanation;
+            const imageUrl = data.url;
+
+            // Create elements
+            const titleElement = $('<h2>').text(title);
+            const dateElement = $('<p>').text('Date: ' + date);
+            const explanationElement = $('<p>').text(explanation);
+            const imageElement = $('<img>').attr('src', imageUrl).attr('alt', title);
+
+            // Append elements to the DOM
+            $('#current-space-info').append(dateElement, explanationElement, imageElement);
+        },
+        error: function (error) {
+            console.error('Error:', error);
+            $('#current-space-info').text('Failed to fetch current space information.');
+        }
+        });
+
+        // Helper for asteroid info
+        function getDate() {
+            let date = new Date();
+            date = date.toISOString().split('T')[0];
+            return date;
+        }
+
+        // Get asteroid info
+        $.ajax({
+            url: 'https://api.nasa.gov/neo/rest/v1/feed?start_date=' + getDate() + '&end_date=' + getDate() + '&api_key=Tn5DgJes1Z2gcXF6prmgcAmn9xYAkQksMh8Xovib',
+            method: 'GET',
+            dataType: 'json',
+        success: function (data) {
+
+            let img = $('<img>').attr('src', 'https://scitechdaily.com/images/Near-Earth-Asteroid-Concept.jpg');
+            const date = Object.keys(data.near_earth_objects)[0];
+
+            const list = $('<ol>');
+            const objects = data.near_earth_objects;
+            objects[date].forEach(current => {
+            let shortSize = current.estimated_diameter.feet;
+            let hazard = current.is_potentially_hazardous_asteroid ? "Yes" : "No";
+            let approach = current.close_approach_data;
+
+            list.append($('<li>').append([
+                $('<h4>').text(current.name).css('color', 'red').css('font-weight', 'bold'),
+                $('<p>').text("Estimated diameter: Between " + shortSize.estimated_diameter_min + " and " + shortSize.estimated_diameter_max + " feet"),
+                $('<p>').text("Is it potentially hazardous: " + hazard),
+                $('<p>').text("Close approach date: " + approach[0].close_approach_date_full),
+                $('<p>').text("Relative velocity: " + approach[0].relative_velocity.miles_per_hour + " miles per hour"),
+                $('<p>').text("Miss distance: " + approach[0].miss_distance.miles + " miles")
+                ]))
+            });
+            
+            // Append elements to the DOM
+            $('#asteroid').append(img, list);
+        },
+        error: function (error) {
+            console.error('Error:', error);
+            $('#asteroid').text('Failed to fetch asteroid information.');
+        }
+        });
+
+        // Fetch EPIC photo
+        $.ajax({
+            url: 'https://api.nasa.gov/EPIC/api/natural/images?api_key=Tn5DgJes1Z2gcXF6prmgcAmn9xYAkQksMh8Xovib',
+            method: 'GET',
+            dataType: 'json',
+        success: function (data) {
+            const latestImage = data[0];
+            const imageDate = latestImage.date;
+            const imageIdentifier = latestImage.image;
+
+            // Construct image URL
+            const epicUrl = `https://api.nasa.gov/EPIC/archive/natural/${imageDate.substring(0, 10).replace(/-/g, '/')}/png/${imageIdentifier}.png?api_key=Tn5DgJes1Z2gcXF6prmgcAmn9xYAkQksMh8Xovib`;
+
+            // create date element
+            const epicDateElemTitle = $('<h3>').text('Earth Now');
+            const epicDateElem = $('<p>').text('Date: ' + imageDate);
+
+            // Create image element
+            const epicElem = $('<img>').attr('src', epicUrl).attr('alt', 'EPIC Image');
+
+            // Append elements to the DOM
+            $('#epic').append(epicDateElemTitle, epicDateElem, epicElem);
+        },
+        error: function (error) {
+            console.error('Error:', error);
+        }
+        });
+
+        // Get people in space
+        $.ajax({
+            url: 'http://api.open-notify.org/astros.json',
+            method: 'GET',
+            dataType: 'json',
+        success: function (data) {
+            const number = data.number;
+            const people = data.people;
+            
+            $('#spacePeople').append("Number of people in space: " + number);
+
+            let list = $('<ul>');
+            $.each(people, function (index, person) {
+            var li = $('<li>').text(person.name + ' - ' + person.craft);
+            list.append(li);
+            });
+
+            $('#spacePeople').append(list);
+        },
+        error: function (error) {
+            console.error('Error fetching space people:', error);
+        }
+        });
+        
+        // Fetch Cat photo
+        getCat();
+        function getCat() {
+            $.ajax({
+                url: 'https://api.thecatapi.com/v1/images/search?api_key=live_DuLnSePXS6AsvSxZT0LmDBnWxvfsZc0W1Vo6C0Sp7K9yGAMEhZUUfY9sp0OzCOeg&has_breeds=1',
+                method: 'GET',
+                dataType: 'json',
+            success: function (data) {
+                const catImgUrl = data[0].url;
+                const catBreed = data[0].breeds[0].name;
+
+                const catTitle = $('<h3>').text('Random Cat');
+                const catImageElem = $('<img>').attr('src', catImgUrl);
+                const catBreedElem = $('<h4>').text(catBreed);
+                const catDesc = $('<p>').text(data[0].breeds[0].description);
+                let newCat = $('<button>').text("New Cat");
+                newCat.on('click', function () {
+                    getCat();
+                });
+
+                // Append elements to the DOM
+                $('#catpic').empty();
+                $('#catpic').append(catTitle, catImageElem, catBreedElem, catDesc, newCat);
+            },
+            error: function (error) {
+                console.error('Error:', error);
+            }
+            });
+        }
+    });
+  </script>
+</body>
+
+</html>
