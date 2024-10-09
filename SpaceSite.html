@@ -129,10 +129,10 @@
     // Get Mars rover photos
     function showRover(rover) {
         $.ajax({
-            url: 'https://api.nasa.gov/mars-photos/api/v1/rovers/' + rover +'/photos?api_key=Tn5DgJes1Z2gcXF6prmgcAmn9xYAkQksMh8Xovib',
+            url: 'https://api.nasa.gov/mars-photos/api/v1/rovers/' + rover +'/photos?api_key=...',
             method: 'GET',
             data: {
-                api_key: 'Tn5DgJes1Z2gcXF6prmgcAmn9xYAkQksMh8Xovib',
+                api_key: '...',
                 sol: getRandomSol(rover),
                 page: 1,
                 camera: getRandomCam(),
@@ -179,7 +179,7 @@
     // DOC READY
     $(document).ready(function () {
         // NASA API endpoint
-        const apiUrl = 'https://api.nasa.gov/planetary/apod?api_key=Tn5DgJes1Z2gcXF6prmgcAmn9xYAkQksMh8Xovib';
+        const apiUrl = 'https://api.nasa.gov/planetary/apod?api_key=...';
 
         // Fetch current space information
         $.ajax({
@@ -216,7 +216,7 @@
 
         // Get asteroid info
         $.ajax({
-            url: 'https://api.nasa.gov/neo/rest/v1/feed?start_date=' + getDate() + '&end_date=' + getDate() + '&api_key=Tn5DgJes1Z2gcXF6prmgcAmn9xYAkQksMh8Xovib',
+            url: 'https://api.nasa.gov/neo/rest/v1/feed?start_date=' + getDate() + '&end_date=' + getDate() + '&api_key=...',
             method: 'GET',
             dataType: 'json',
         success: function (data) {
@@ -252,7 +252,7 @@
 
         // Fetch EPIC photo
         $.ajax({
-            url: 'https://api.nasa.gov/EPIC/api/natural/images?api_key=Tn5DgJes1Z2gcXF6prmgcAmn9xYAkQksMh8Xovib',
+            url: 'https://api.nasa.gov/EPIC/api/natural/images?api_key=...',
             method: 'GET',
             dataType: 'json',
         success: function (data) {
@@ -261,7 +261,7 @@
             const imageIdentifier = latestImage.image;
 
             // Construct image URL
-            const epicUrl = `https://api.nasa.gov/EPIC/archive/natural/${imageDate.substring(0, 10).replace(/-/g, '/')}/png/${imageIdentifier}.png?api_key=Tn5DgJes1Z2gcXF6prmgcAmn9xYAkQksMh8Xovib`;
+            const epicUrl = `https://api.nasa.gov/EPIC/archive/natural/${imageDate.substring(0, 10).replace(/-/g, '/')}/png/${imageIdentifier}.png?api_key=...`;
 
             // create date element
             const epicDateElemTitle = $('<h3>').text('Earth Now');
@@ -306,7 +306,7 @@
         getCat();
         function getCat() {
             $.ajax({
-                url: 'https://api.thecatapi.com/v1/images/search?api_key=live_DuLnSePXS6AsvSxZT0LmDBnWxvfsZc0W1Vo6C0Sp7K9yGAMEhZUUfY9sp0OzCOeg&has_breeds=1',
+                url: 'https://api.thecatapi.com/v1/images/search?api_key=...',
                 method: 'GET',
                 dataType: 'json',
             success: function (data) {
